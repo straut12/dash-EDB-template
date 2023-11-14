@@ -372,7 +372,9 @@ app.layout = dbc.Container([
 
 
 #=====CREATE INTERACTIVE GRAPHS=============
-# Callbacks are used to update the graphs and tables when the user changes the inputs   
+# Callbacks are used to update the graphs and tables when the user changes the inputs (ie tool, unit, etc) 
+# Callbacks are also used to update the tables when the user changes the date range
+
 # Summary table update 
 @app.callback(
     Output('summary-table', 'data'),     # args are component id and then component property. component property is passed
@@ -381,6 +383,17 @@ app.layout = dbc.Container([
     State('summary-table', 'data'),
     Input('chart-y', 'value'))
 def summary_table(start_date, end_date, rows, mpx):
+    """Generate summary table for mean and sigma
+    
+    Args:
+        start_date (str): start date from date range
+        end_date (str): end date from date range
+        rows (dict): empty dict for summary table
+        mpx (str): chart y-axis selection
+        
+    Returns:
+        dict: summary table data"""
+    
     filtered_data = df.query("date >= @start_date and date <= @end_date")
     dfsummary = filtered_data.groupby('Tool')[mpx].describe()  
     dfsummary = dfsummary.reset_index()
